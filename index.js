@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const md5 = require('md5');
 
+const Users = require('./users/users-model.js');
 const server = express();
 
 server.use(express.json());

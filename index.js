@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const md5 = require('md5');
 
 const server = express();
 
@@ -19,7 +20,7 @@ server.get('/', (req, res) => {
 //    - runs the hashing a configurable number of times
 //    - has a helper to check whether a password matches a hash
 
-const sillyBcrypt = {
+const customBcrypt = {
 	hash(rawPassword, iterations) {
 		// computes random salt
 		// md5 the cancatenated rawPassword + salt
@@ -43,6 +44,12 @@ function restricted(req, res, next) {
 function checkCredentialsInBody(req, res, next) {
 	// checks req.body for username and password
 	// auths
+	let { password } = req.body;
+	if (bcrypt.compareSync(password, user.password)) {
+		next();
+	} else {
+		res.status(401).json({ message: 'Invalid Credentials' });
+	}
 }
 
 server.post('/api/register', (req, res) => {
@@ -68,12 +75,12 @@ server.post('/api/register', (req, res) => {
 server.post('/api/login', checkCredentialsInBody, (req, res) => {
 	// use bcrypt to compara the saved hash
 	// against the result of hashing again the provided password
-	let { username, password } = req.body;
+	let { username } = req.body;
 
 	Users.findBy({ username })
 		.first()
 		.then(user => {
-			if (user && bcrypt.compareSync(password, user.password)) {
+			if (user) {
 				res.status(200).json({ message: `Welcome ${user.username}!` });
 			} else {
 				res.status(401).json({ message: 'Invalid Credentials' });

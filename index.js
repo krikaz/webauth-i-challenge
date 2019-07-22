@@ -31,13 +31,19 @@ const sillyBcrypt = {
 		for (let i = 0; i < iterations; i++) {
 			result = md5(result);
 		}
-		return randomSalt, iterations, result;
+		return result;
 	},
 
 	compare(rawPassword, sillyBcryptHash) {
 		// pull the number of iterations and the salt from the sillyBcryptHash
 		// recompute a hash
 		// check that results are identical
+		// let user = Users.findBy({ username }).first();
+		// let result = rawPassword + sillyBcryptHash.userSalt;
+		// for (let i = 0; i < iterations; i++) {
+		// 	result = md5(result);
+		// }
+		// return result === user.password;
 	},
 };
 

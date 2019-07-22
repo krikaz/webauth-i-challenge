@@ -21,11 +21,17 @@ server.get('/', (req, res) => {
 //    - runs the hashing a configurable number of times
 //    - has a helper to check whether a password matches a hash
 
-const customBcrypt = {
+const sillyBcrypt = {
 	hash(rawPassword, iterations) {
 		// computes random salt
 		// md5 the cancatenated rawPassword + salt
 		// does it "iterations" number of times
+		let randomSalt = new Date().getTime();
+		let result = rawPassword + randomSalt;
+		for (let i = 0; i < iterations; i++) {
+			result = md5(result);
+		}
+		return randomSalt, iterations, result;
 	},
 
 	compare(rawPassword, sillyBcryptHash) {

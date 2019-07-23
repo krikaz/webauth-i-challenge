@@ -69,11 +69,27 @@ server.post('/api/auth/register', (req, res) => {
 		});
 });
 
-server.post('/api/auth/login', checkCredentialsInBody, (req, res) => {
-	let { username } = req.body;
+server.post('/api/auth/login', (req, res) => {
+	// let { username } = req.body;
+
+	// Users.findBy({ username })
+	// 	.first()
+	// 	.catch(error => {
+	// 		res.status(500).json(error);
+	// 	});
+
+	let { username, password } = req.body;
 
 	Users.findBy({ username })
 		.first()
+		.then(user => {
+			if (user && bcrypt.compareSync(password, user.password)) {
+				req.session.user = user;
+				res.status(200).json({ message: `Welcome ${user.username}!` });
+			} else {
+				res.status(401).json({ message: 'Invalid Credentials' });
+			}
+		})
 		.catch(error => {
 			res.status(500).json(error);
 		});
@@ -88,7 +104,7 @@ server.get('/api/users', (req, res) => {
 });
 
 server.get('/api/restricted', restricted, (req, res) => {
-	res.send('restricted area for restricted users').catch(err => res.send(err));
+	res.send('restricted area for restricted users');
 });
 
 const port = 5000;
